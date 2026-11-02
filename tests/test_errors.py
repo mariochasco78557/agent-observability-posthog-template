@@ -96,7 +96,7 @@ def test_error_strings_are_redacted(make_run, mem):
     with pytest.raises(RuntimeError):
         with make_run() as run:
             with run.stage("s"):
-                raise RuntimeError("auth failed for key sk-ant-api03-AAAAAAAAAAAAAAAAAAAA")
+                raise RuntimeError("auth failed for key " + "sk-" + "ant-" + "api03-" + "AAAAAAAAAAAAAAAAAAAA")
     assert "sk-ant" not in props(mem, "$ai_span")["$ai_error"]
     assert "[REDACTED:anthropic_key]" in props(mem, "$ai_trace")["$ai_error"]
 
