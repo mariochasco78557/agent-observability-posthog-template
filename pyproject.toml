@@ -1,0 +1,36 @@
+[project]
+name = "agent-observability-posthog-template"
+version = "0.1.0"
+description = "Trace headless Claude Code (claude -p) pipelines and scheduled agent jobs into PostHog AI observability and error tracking."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Mario Chasco" }]
+keywords = ["posthog", "llm", "observability", "claude-code", "agents", "tracing"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = ["posthog>=7.0,<8"]
+
+[project.urls]
+Repository = "https://github.com/mariochasco78557/agent-observability-posthog-template"
+
+[project.scripts]
+agent-obs-demo = "agent_observability.demo:main"
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_observability"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

@@ -1,0 +1,1 @@
+{"type": "result", "subtype": "error_max_turns", "is_error": true, "duration_ms": 9000, "num_turns": 3, "result": "Reached max turns (3)", "total_cost_usd": 0.004, "usage": {"input_tokens": 900, "output_tokens": 40}}

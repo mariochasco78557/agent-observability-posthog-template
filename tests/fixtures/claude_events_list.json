@@ -1,0 +1,1 @@
+[{"type": "system", "subtype": "init", "model": "claude-sonnet-synthetic"}, {"type": "assistant", "message": {"content": [{"type": "text", "text": "hi"}]}}, {"type": "result", "subtype": "success", "is_error": false, "result": "```json\n{\"ok\": true}\n```", "usage": {"input_tokens": 12, "output_tokens": 8}, "total_cost_usd": 0.0002}]

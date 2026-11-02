@@ -1,0 +1,28 @@
+# agent-observability-posthog-template
+
+> Python library (v0.1, MIT) that traces headless Claude Code pipelines (`claude -p --output-format json`) and other scheduled agent jobs into PostHog: one `$ai_trace` per run, one `$ai_span` per stage, one `$ai_generation` per model call, `$exception` for failures, and a `pipeline_run_finished` event with the run's counters. No-op without POSTHOG_API_KEY; telemetry never raises; prompt/output content is not sent unless capture_content=True.
+
+## API surface
+- `Pipeline(name, distinct_id=None, *, api_key=None, host=None, capture_content=False, redactor=None, transport=None, flush_timeout_s=5.0, properties=None, person_profiles=False, claude_binary=None, claude_executor=None, strip_api_key_env=False, max_content_chars=20000)`: context manager; `.stage(name, **attrs) -> Span`, `.counter(name, value)`, `.incr(name, by=1)`, `.set(**attrs)`, `.mark_error(msg)`, `.capture_exception(exc, **props)`, `.generation(...)`, `.finish()`, `.trace_id`, `.enabled`, `.telemetry_errors`, `.ok`
+- `Span`: context manager; `.claude_p(prompt, *, model, json_schema, cwd, max_turns, timeout_s, extra_args, env, name, check=True) -> ClaudeResult`, `.generation(*, model, provider, input_tokens, output_tokens, latency_s, cost_usd, is_error, error, input, output, name, ...)`, `.record_claude_result(result, prompt=, name=)`, `.child(name)`, `.set(**attrs)`, `.capture_exception(exc, **props)`
+- `parse_claude_json(stdout, *, returncode, stderr, requested_model, latency_s) -> ClaudeResult` (never raises), `run_claude_p(...)`, `build_claude_cmd(...)`, `FakeClaude` (offline executor), `ClaudeCLIError`
+- `Redactor(patterns=None, extra=())`, `.add(name, regex)`; `fingerprint(text)`
+- Transports: `PostHogTransport`, `MemoryTransport` (tests, `--print`), `NullTransport`
+
+## Docs
+- [README](README.md): what, why, quick start, privacy
+- [Event schema](docs/EVENTS.md): every event and property the library emits
+- [Agent queries](docs/AGENT_QUERIES.md): questions + SQL for PostHog MCP / PostHog AI (untested against a live project)
+- [Agent rules for this repo](CLAUDE.md)
+
+## Code
+- [src/agent_observability/pipeline.py](src/agent_observability/pipeline.py): Pipeline, Span, event construction
+- [src/agent_observability/claude.py](src/agent_observability/claude.py): claude -p command, runner, parser, FakeClaude
+- [src/agent_observability/privacy.py](src/agent_observability/privacy.py): redaction patterns, fingerprints
+- [src/agent_observability/transport.py](src/agent_observability/transport.py): PostHog SDK wrapper, SafeSink, bounded flush
+- [examples/demo_pipeline.py](examples/demo_pipeline.py): fake pipeline, no CLI needed
+- [examples/claude_p_pipeline.py](examples/claude_p_pipeline.py): real claude -p pipeline
+- [tests/](tests/): offline pytest suite
+
+## Environment
+- `POSTHOG_API_KEY` (project key, phc_...), `POSTHOG_HOST` (default https://us.i.posthog.com; EU: https://eu.i.posthog.com), `CLAUDE_BIN`, `AGENT_OBS_DISABLED=1`
